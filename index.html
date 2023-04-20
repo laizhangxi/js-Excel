@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GYD-Excel</title>
+  </head>
+  <link rel="stylesheet" href="./css/gyd-ui.css" />
+  <body onload="mounted()">
+    <div class="my-app-main">
+      <div class="table-setting">
+        <div class="gyd-select" id="set_page_size" style="width: 70px"></div>
+        <div class="gyd-button" onclick="createTabel()">新建表格</div>
+        <div class="gyd-button" onclick="mergeCell()">合并单元格</div>
+        <div class="gyd-select-button" id="set_split_type">拆分单元格</div>
+      </div>
+      <div class="table-contain">
+        <div id="table_canvas"></div>
+      </div>
+    </div>
+  </body>
+
+  <script src="./js/gyd-ui.js"></script>
+  <script src="./js/common.js"></script>
+
+  <script>
+    let tableCanvas = null;
+    let activeTabelName = "";
+    let pageSize = [21, 29.7];
+    const mounted = () => {
+      // 纸张默认值
+      tableCanvas = document.querySelector("#table_canvas");
+      changeSize(pageSize);
+
+      let isMousedown = false;
+      let startRow = 0;
+      let startCol = 0;
+      tableCanvas.addEventListener("mousedown", (event) => {
+        if (event.which === 3) {
+          return;
+        }
+        cancelSelect();
+        isMousedown = true;
+        startRow = +event.target.getAttribute("row");
+        startCol = +event.target.getAttribute("col");
+        let activeTabel = event.target.parentNode.parentNode.parentNode;
+        activeTabelName = activeTabel.getAttribute("name");
+      });
+      tableCanvas.addEventListener("mousemove", (event) => {
+        if (event.which === 3) {
+          return;
+        }
+        if (isMousedown) {
+          let rowTemp = +event.target.getAttribute("row");
+          let colTemp = +event.target.getAttribute("col");
+          setSelectTd(startRow, rowTemp, startCol, colTemp);
+        }
+      });
+      tableCanvas.addEventListener("mouseup", () => {
+        isMousedown = false;
+      });
+    };
+
+    gydSelect.init({
+      id: "set_page_size",
+      placeholder: "纸张大小",
+      defaultIndex: 0,
+      align: "center",
+      options: [
+        { label: "A4", value: [21, 29.7] },
+        { label: "A5", value: [14.8, 21] },
+        { label: "出货单", value: [24.1, 13.97] },
+      ],
+      change: (item) => {
+        addSplit();
+        changeSize(item.value);
+        pageSize = item.value;
+      },
+    });
+    gydSelectButton.init({
+      id: "set_split_type",
+      switchShowName: true,
+      defaultIndex: 2,
+      btnClick: () => {
+        console.log("btnClick");
+      },
+      btns: [
+        {
+          showName: "拆分行",
+          click: () => {
+            splitRow();
+          },
+        },
+        {
+          showName: "拆分列",
+          click: () => {
+            splitCol();
+          },
+        },
+        {
+          showName: "完全拆分",
+          click: () => {
+            splitRow();
+            splitCol();
+          },
+        },
+      ],
+      change: (item) => {
+        console.log(item, "item====");
+      },
+    });
+
+    const createTabel = () => {
+      gydDialog.init({
+        title: "新建表格",
+        width: "300px",
+        height: "160px",
+        labelWidth: "40px",
+        content: [
+          {
+            type: "input",
+            id: "set_table_row",
+            label: "行数",
+            value: "10",
+          },
+          {
+            type: "input",
+            id: "set_table_col",
+            label: "列数",
+            value: "10",
+          },
+        ],
+        btns: [
+          {
+            name: "确定",
+            click: (item, dialogName) => {
+              console.log(item, "确定");
+              let rowNum = +item.set_table_row;
+              let colNum = +item.set_table_col;
+              let width = pageSize[0];
+              let colStr = "";
+              for (let col = 0; col < colNum; col++) {
+                colStr += `<col style="width: ${width / colNum}cm" index=${col}></col>`;
+              }
+              let nowTime = Date.now();
+              let curHtmlStr = `<table rowNum=${rowNum} colNum=${colNum} name="table-${nowTime}" style="word-break:break-all;"><colgroup>${colStr}</colgroup><tbody>`;
+              for (let row = 0; row < rowNum; row++) {
+                curHtmlStr += `<tr>`;
+                for (let col = 0; col < colNum; col++) {
+                  curHtmlStr += `<td row=${row} col=${col} contenteditable></td>`;
+                }
+                curHtmlStr += "</tr>";
+              }
+              curHtmlStr += "</tbody></table>";
+              let tableCanvas = document.querySelector("#table_canvas");
+              let totalHtml = tableCanvas.innerHTML;
+              totalHtml += curHtmlStr;
+              tableCanvas.innerHTML = totalHtml;
+              addSplit();
+            },
+          },
+          { name: "取消" },
+        ],
+      });
+    };
+
+    const mergeCell = () => {
+      let selectTdList = getSelectTdList();
+      if (!selectTdList.length) {
+        return;
+      }
+      let firstTd = selectTdList[0];
+      let { row, col, rowNum = 0, colNum = 0 } = getTdInfo(firstTd);
+      let firstTdRow = selectTdList[0].getAttribute("row");
+      let totalColNum = 0;
+      selectTdList.forEach((td) => {
+        if (td.getAttribute("row") === firstTdRow) {
+          totalColNum += Number(td.getAttribute("colspan")) || 1;
+        }
+      });
+
+      let endRow = +selectTdList[selectTdList.length - 1].getAttribute("row");
+      let endRowNum = +selectTdList[selectTdList.length - 1].getAttribute("rowspan");
+      let totalRowNum = 0;
+      if (row === endRow) {
+        totalRowNum = rowNum || endRow - row + 1;
+      } else if (endRowNum > 0) {
+        totalRowNum = endRow - row + endRowNum;
+      } else {
+        totalRowNum = endRow - row + 1;
+      }
+      firstTd.setAttribute("rowspan", totalRowNum);
+      firstTd.setAttribute("colspan", totalColNum);
+      selectTdList.forEach((item, index) => {
+        if (index > 0) {
+          item.remove();
+        }
+      });
+    };
+
+    const addSplit = () => {
+      setTimeout(() => {
+        let tableList = document.querySelectorAll("#table_canvas table");
+        let splitList = document.querySelectorAll(".split-line");
+        splitList.forEach((split) => {
+          split.remove();
+        });
+        tableList.forEach((tabelDom) => {
+          let tableContain = document.querySelector(".table-contain");
+          let tableName = tabelDom.getAttribute("name");
+          let rowNum = +tabelDom.getAttribute("rowNum");
+          let colNum = +tabelDom.getAttribute("colNum");
+          for (let col = 1; col < colNum; col++) {
+            let splitStr = `<div class="split-line" name="${tableName}" style="left:${tabelDom.rows[0].cells[col].offsetLeft}px;height: ${rowNum * 0.5}cm;top:${tabelDom.offsetTop}px" index=${col}></div>`;
+            tableContain.appendChild(gyd.parseTdDom(splitStr)[0]);
+          }
+        });
+        setTimeout(() => {
+          let splitContain = document.querySelector(".table-contain");
+          let splitList = document.querySelectorAll(".split-line");
+          let cmNum = +document.querySelector("#table_canvas").style.width.replace("cm", "");
+          let pxNum = +splitContain.offsetWidth;
+          let pxToCmScale = pxNum / cmNum;
+
+          let hasSplitDown = false;
+          let splitDownEvent = null;
+          let curColDom = null;
+          let nextColDom = null;
+          let curColWidth = 0;
+          let nextColWidth = 0;
+          let oriSplitLeft = 0;
+          splitList.forEach((split) => {
+            split.addEventListener("mousedown", (event) => {
+              event.preventDefault();
+              console.log("==11==mousedown");
+              event.target.style.background = "#ccc";
+              splitContain.style.cursor = "col-resize";
+              hasSplitDown = true;
+              splitDownEvent = event;
+              oriSplitLeft = +event.target.style.left.replace("px", "");
+              let splitName = splitDownEvent.target.getAttribute("name");
+              let splitIndex = +splitDownEvent.target.getAttribute("index");
+              curColDom = document.querySelector(`table[name="${splitName}"] col[index="${splitIndex - 1}"]`);
+              nextColDom = curColDom.nextSibling;
+              curColWidth = +curColDom.style.width.replace("cm", "");
+              nextColWidth = +nextColDom.style.width.replace("cm", "");
+            });
+          });
+          splitList.forEach((split) => {
+            split.addEventListener("mousemove", (event) => {
+              if (!hasSplitDown) {
+                event.preventDefault();
+                event.target.style.background = "#ccc";
+                splitContain.style.cursor = "col-resize";
+              }
+            });
+          });
+          splitList.forEach((split) => {
+            split.addEventListener("mouseleave", (event) => {
+              event.preventDefault();
+              if (!hasSplitDown) {
+                event.target.style.background = "unset";
+                splitContain.style.cursor = "unset";
+              }
+            });
+          });
+          splitContain.addEventListener("mousemove", (event) => {
+            if (hasSplitDown) {
+              let oriLeft = splitDownEvent.clientX;
+              let curLeft = event.clientX;
+              let diffX = curLeft - oriLeft;
+              if (nextColWidth - diffX / pxToCmScale > 0.5 && curColWidth + diffX / pxToCmScale > 0.5) {
+                splitDownEvent.target.style.left = oriSplitLeft + diffX + "px";
+                curColDom.style.width = (curColWidth + diffX / pxToCmScale).toFixed(2) + "cm";
+                nextColDom.style.width = (nextColWidth - diffX / pxToCmScale).toFixed(2) + "cm";
+              }
+            }
+          });
+          splitContain.addEventListener("mouseup", () => {
+            splitList.forEach((split) => {
+              split.style.background = "unset";
+              splitContain.style.cursor = "unset";
+              hasSplitDown = false;
+              splitDownEvent = null;
+            });
+          });
+        });
+      });
+    };
+
+    const changeSize = (pageSize) => {
+      let tableCanvas = document.querySelector("#table_canvas");
+      tableCanvas.style.width = pageSize[0] + "cm";
+      tableCanvas.style.height = pageSize[1] + "cm";
+      let tableList = document.querySelectorAll("#table_canvas table");
+      tableList.forEach((table) => {
+        let colList = table.querySelector("colgroup").childNodes;
+        let totalwidth = 0;
+        let colWidthList = [];
+        colList.forEach((col) => {
+          let width = +col.style.width.replace("cm", "");
+          colWidthList.push(width);
+          totalwidth += width;
+        });
+        colList.forEach((col, index) => {
+          col.style.width = (pageSize[0] * colWidthList[index]) / totalwidth + "cm";
+        });
+      });
+    };
+    const setSelectTd = (startRow, endRow, startCol, endCol) => {
+      cancelSelect();
+      if (isNaN(startRow) || isNaN(endRow) || isNaN(startCol) || isNaN(endCol)) {
+        return;
+      }
+      // 上下左右任意拖动
+      for (let row = Math.min(startRow, endRow); row < Math.max(startRow, endRow) + 1; row++) {
+        for (let col = Math.min(startCol, endCol); col < Math.max(startCol, endCol) + 1; col++) {
+          let curTdDom = document.querySelector(`table[name="${activeTabelName}"] td[row="${row}"][col="${col}"]`);
+          if (curTdDom) {
+            curTdDom.classList.add("select-td");
+          }
+        }
+      }
+    };
+    const cancelSelect = () => {
+      let tdList = document.querySelectorAll("#table_canvas td");
+      tdList.forEach((td) => {
+        td.classList.remove("select-td");
+      });
+    };
+    const getSelectTdList = () => {
+      let selectTdList = document.querySelectorAll("#table_canvas td.select-td");
+      if (selectTdList.length === 0) {
+        gydMessage.init({
+          text: "未选中单元格",
+        });
+        return [];
+      }
+      return selectTdList;
+    };
+    const getTdInfo = (tdDom) => {
+      let row = +tdDom.getAttribute("row");
+      let col = +tdDom.getAttribute("col");
+      let rowNum = +tdDom.getAttribute("rowspan");
+      let colNum = +tdDom.getAttribute("colspan");
+      return { row, col, rowNum, colNum };
+    };
+    const splitRow = (setItem, option) => {
+      let selectTdList = getSelectTdList();
+      selectTdList.forEach((tdDom) => {
+        const { row, col, rowNum, colNum } = getTdInfo(tdDom);
+        // 删除自身行合并属性
+        tdDom.removeAttribute("rowspan");
+        // 为后续的tr添加相应的td
+        for (let i = 1; i < rowNum; i++) {
+          let addTdStr = `<td row="${row + i}" col="${col}"  colspan="${colNum}" class="select-td" contenteditable></td>`;
+          // 找下一个tr相同位置的td的前一个td(前面可能有合并单元格的情况，所以要遍历)
+          let curTd = null;
+          for (let j = col - 1; j > 0; j--) {
+            curTd = document.querySelector(`table[name="${activeTabelName}"] td[row="${row + i}"][col="${j}"]`);
+            if (curTd) {
+              curTd.after(gyd.parseTdDom(addTdStr)[0]);
+              break;
+            }
+          }
+          // 找下一个tr相同位置的td的后一个td（没有前td）
+          if (!curTd) {
+            curTd = document.querySelector(`table[name="${activeTabelName}"] td[row="${row + i}"][col="${col + colNum}"]`);
+            if (curTd) {
+              curTd.before(gyd.parseTdDom(addTdStr)[0]);
+            }
+          }
+        }
+      });
+    };
+    const splitCol = (setItem, option) => {
+      let selectTdList = getSelectTdList();
+      selectTdList.forEach((tdDom) => {
+        const { row, col, rowNum, colNum } = getTdInfo(tdDom);
+        // 删除自身的列合并属性
+        tdDom.removeAttribute("colspan");
+        // 补齐同一行的td
+        for (let i = colNum - 1; i > 0; i--) {
+          // td的rowspan为0或为1不需要为后续的td添加rowspan属性
+          let addTdStr = `<td row="${row}" col="${col + i}" class="select-td" contenteditable></td>`;
+          if (rowNum && rowNum !== 1) {
+            addTdStr = `<td row="${row}" col="${col + i}" rowspan="${rowNum}" class="select-td" contenteditable></td>`;
+          }
+          if (tdDom) {
+            tdDom.after(gyd.parseTdDom(addTdStr)[0]);
+          }
+        }
+      });
+    };
+  </script>
+
+  <style>
+    html,
+    body {
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+
+    .my-app-main {
+      height: 100%;
+      padding: 0px 10px;
+    }
+
+    .table-setting {
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      background-color: rgb(245, 247, 249);
+      display: flex;
+      z-index: 10;
+      padding: 5px 10px;
+    }
+    .table-setting > div {
+      margin: 0px 5px;
+    }
+
+    .table-contain {
+      position: relative;
+      padding-top: 50px;
+    }
+
+    .table-contain .split-line {
+      position: absolute;
+      top: 0px;
+      width: 2px;
+      height: 100%;
+    }
+
+    .setting-item {
+      margin: 2px 2px;
+    }
+
+    #table_canvas {
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      overflow: auto;
+    }
+
+    #table_canvas table {
+      border: 1px solid #ccc;
+      position: relative;
+    }
+
+    #table_canvas td {
+      outline: none;
+      border: 1px solid #ccc;
+    }
+
+    #table_canvas td * {
+      pointer-events: none;
+    }
+
+    #table_canvas td.select-td {
+      background-color: #909399;
+    }
+    .active-item {
+      color: #409eff;
+    }
+
+    select {
+      outline: none;
+      height: 30px;
+      border: 1px solid #dcdfe6;
+      appearance: none;
+      padding: 0px 10px;
+    }
+    select:focus {
+      outline: none;
+    }
+  </style>
+  <!-- 需要在渲染页面设置的样式 -->
+  <style>
+    #table_canvas table {
+      border-collapse: collapse;
+      /* min-width: 100%; */
+    }
+
+    #table_canvas table tr {
+      height: 0.5cm;
+      line-height: 1;
+    }
+    #table_canvas table td {
+      box-sizing: border-box;
+      padding: 0px;
+    }
+  </style>
+</html>
