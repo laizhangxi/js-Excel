@@ -10,13 +10,24 @@
   <body onload="mounted()">
     <div class="my-app-main">
       <div class="table-setting">
-        <div class="gyd-select" id="set_page_size" style="width: 70px"></div>
-        <div class="gyd-button" onclick="createTabel()">新建表格</div>
-        <div class="gyd-button" onclick="mergeCell()">合并单元格</div>
-        <div class="gyd-select-button" id="set_split_type">拆分单元格</div>
+        <div class="setting-level">
+          <div title="纸张大小" class="gyd-select" id="set_page_size" style="width: 70px"></div>
+          <div class="gyd-button" onclick="createTabel()">建表</div>
+          <div class="gyd-button" onclick="mergeCell()">合并</div>
+          <div class="gyd-select-button" id="set_split_type" style="width: 104px">拆分单元格</div>
+          <div class="gyd-button" onclick="lastStep()">撤销</div>
+          <div class="gyd-button" onclick="nextStep()">反撤</div>
+          <div class="gyd-select-button" id="insert_row_column" style="width: 104px">插入行列</div>
+        </div>
+        <div class="setting-level">
+          <div title="字体" class="gyd-select" id="set_font_family" style="width: 125px"></div>
+          <div title="字体大小" class="gyd-select" id="set_font_size" style="width: 50px"></div>
+          <div title="垂直对齐" class="gyd-select-button" id="set_vertical_align" style="width: 104px">垂直对齐</div>
+          <div title="水平对齐" class="gyd-select-button" id="set_text_align" style="width: 104px">水平对齐</div>
+        </div>
       </div>
       <div class="table-contain">
-        <div id="table_canvas"></div>
+        <div id="table_canvas"><table rownum="10" colnum="10" name="table-1682477721786" style="word-break:break-all;"><colgroup><col style="width: 2.1cm" index="0"><col style="width: 2.1cm" index="1"><col style="width: 2.1cm" index="2"><col style="width: 2.1cm" index="3"><col style="width: 2.1cm" index="4"><col style="width: 2.1cm" index="5"><col style="width: 2.1cm" index="6"><col style="width: 2.1cm" index="7"><col style="width: 2.1cm" index="8"><col style="width: 2.1cm" index="9"></colgroup><tbody><tr><td row="0" col="0" contenteditable=""></td><td row="0" col="1" contenteditable=""></td><td row="0" col="2" contenteditable=""></td><td row="0" col="3" contenteditable=""></td><td row="0" col="4" contenteditable=""></td><td row="0" col="5" contenteditable=""></td><td row="0" col="6" contenteditable=""></td><td row="0" col="7" contenteditable=""></td><td row="0" col="8" contenteditable=""></td><td row="0" col="9" contenteditable=""></td></tr><tr><td row="1" col="0" contenteditable=""></td><td row="1" col="1" contenteditable=""></td><td row="1" col="2" contenteditable=""></td><td row="1" col="3" contenteditable=""></td><td row="1" col="4" contenteditable=""></td><td row="1" col="5" contenteditable=""></td><td row="1" col="6" contenteditable=""></td><td row="1" col="7" contenteditable=""></td><td row="1" col="8" contenteditable=""></td><td row="1" col="9" contenteditable=""></td></tr><tr><td row="2" col="0" contenteditable=""></td><td row="2" col="1" contenteditable=""></td><td row="2" col="2" contenteditable=""></td><td row="2" col="3" contenteditable=""></td><td row="2" col="4" contenteditable=""></td><td row="2" col="5" contenteditable=""></td><td row="2" col="6" contenteditable=""></td><td row="2" col="7" contenteditable=""></td><td row="2" col="8" contenteditable=""></td><td row="2" col="9" contenteditable=""></td></tr><tr><td row="3" col="0" contenteditable="" class="td-focus"></td><td row="3" col="1" contenteditable=""></td><td row="3" col="2" contenteditable=""></td><td row="3" col="3" contenteditable=""></td><td row="3" col="4" contenteditable=""></td><td row="3" col="5" contenteditable=""></td><td row="3" col="6" contenteditable=""></td><td row="3" col="7" contenteditable=""></td><td row="3" col="8" contenteditable=""></td><td row="3" col="9" contenteditable=""></td></tr><tr><td row="4" col="0" contenteditable=""></td><td row="4" col="1" contenteditable=""></td><td row="4" col="2" contenteditable=""></td><td row="4" col="3" contenteditable=""></td><td row="4" col="4" contenteditable=""></td><td row="4" col="5" contenteditable=""></td><td row="4" col="6" contenteditable=""></td><td row="4" col="7" contenteditable=""></td><td row="4" col="8" contenteditable=""></td><td row="4" col="9" contenteditable=""></td></tr><tr><td row="5" col="0" contenteditable=""></td><td row="5" col="1" contenteditable=""></td><td row="5" col="2" contenteditable=""></td><td row="5" col="3" contenteditable=""></td><td row="5" col="4" contenteditable=""></td><td row="5" col="5" contenteditable=""></td><td row="5" col="6" contenteditable=""></td><td row="5" col="7" contenteditable=""></td><td row="5" col="8" contenteditable=""></td><td row="5" col="9" contenteditable=""></td></tr><tr><td row="6" col="0" contenteditable=""></td><td row="6" col="1" contenteditable=""></td><td row="6" col="2" contenteditable=""></td><td row="6" col="3" contenteditable=""></td><td row="6" col="4" contenteditable=""></td><td row="6" col="5" contenteditable=""></td><td row="6" col="6" contenteditable=""></td><td row="6" col="7" contenteditable=""></td><td row="6" col="8" contenteditable=""></td><td row="6" col="9" contenteditable=""></td></tr><tr><td row="7" col="0" contenteditable=""></td><td row="7" col="1" contenteditable=""></td><td row="7" col="2" contenteditable=""></td><td row="7" col="3" contenteditable=""></td><td row="7" col="4" contenteditable=""></td><td row="7" col="5" contenteditable=""></td><td row="7" col="6" contenteditable=""></td><td row="7" col="7" contenteditable=""></td><td row="7" col="8" contenteditable=""></td><td row="7" col="9" contenteditable=""></td></tr><tr><td row="8" col="0" contenteditable=""></td><td row="8" col="1" contenteditable=""></td><td row="8" col="2" contenteditable=""></td><td row="8" col="3" contenteditable=""></td><td row="8" col="4" contenteditable=""></td><td row="8" col="5" contenteditable=""></td><td row="8" col="6" contenteditable=""></td><td row="8" col="7" contenteditable=""></td><td row="8" col="8" contenteditable=""></td><td row="8" col="9" contenteditable=""></td></tr><tr><td row="9" col="0" contenteditable=""></td><td row="9" col="1" contenteditable=""></td><td row="9" col="2" contenteditable=""></td><td row="9" col="3" contenteditable=""></td><td row="9" col="4" contenteditable=""></td><td row="9" col="5" contenteditable=""></td><td row="9" col="6" contenteditable=""></td><td row="9" col="7" contenteditable=""></td><td row="9" col="8" contenteditable=""></td><td row="9" col="9" contenteditable=""></td></tr></tbody></table></div>
       </div>
     </div>
   </body>
@@ -28,20 +39,27 @@
     let tableCanvas = null;
     let activeTabelName = "";
     let pageSize = [21, 29.7];
+    let stepData = [];
+    let stepIndex = -1;
     const mounted = () => {
       // 纸张默认值
       tableCanvas = document.querySelector("#table_canvas");
       changeSize(pageSize);
+      addCanvasEvent();
+      saveCurSetp();
+    };
 
+    const addCanvasEvent = () => {
       let isMousedown = false;
       let startRow = 0;
       let startCol = 0;
       tableCanvas.addEventListener("mousedown", (event) => {
-        if (event.which === 3) {
+        if (event.which === 3 || event.target.tagName !== 'TD') {
           return;
         }
         cancelSelect();
         isMousedown = true;
+        event.target.classList.add("td-focus");
         startRow = +event.target.getAttribute("row");
         startCol = +event.target.getAttribute("col");
         let activeTabel = event.target.parentNode.parentNode.parentNode;
@@ -73,14 +91,48 @@
         { label: "出货单", value: [24.1, 13.97] },
       ],
       change: (item) => {
-        addSplit();
         changeSize(item.value);
         pageSize = item.value;
+        addSplit();
+        saveCurSetp();
       },
     });
+    gydSelect.init({
+      id: "set_font_family",
+      placeholder: "字体",
+      defaultIndex: 0,
+      align: "center",
+      options: [
+        { label: "sans-serif", value: "sans-serif" },
+        { label: "宋体", value: "songti" },
+        { label: "楷体", value: "kaiti" },
+        { label: "arial", value: "arial" },
+        { label: "arial black", value: "arialBlack" },
+        { label: "impact", value: "impact" },
+      ],
+      change: (item) => {
+        setTdStyle('fontFamily', item.value)
+        saveCurSetp();
+      },
+    });
+    let fontSizeList = [];
+    for (let i = 0; i < 29; i++) {
+      fontSizeList.push({ label: `${i + 8}`, value: i + 8 });
+    }
+    gydSelect.init({
+      id: "set_font_size",
+      placeholder: "字体大小",
+      defaultIndex: 4,
+      align: "center",
+      options: fontSizeList,
+      change: (item) => {
+        setTdStyle('fontSize', item.value, 'px')
+        saveCurSetp();
+      },
+    });
+
     gydSelectButton.init({
       id: "set_split_type",
-      switchShowName: true,
       defaultIndex: 2,
       btnClick: () => {
         console.log("btnClick");
@@ -90,12 +142,14 @@
           showName: "拆分行",
           click: () => {
             splitRow();
+            saveCurSetp();
           },
         },
         {
           showName: "拆分列",
           click: () => {
             splitCol();
+            saveCurSetp();
           },
         },
         {
@@ -103,6 +157,7 @@
           click: () => {
             splitRow();
             splitCol();
+            saveCurSetp();
           },
         },
       ],
@@ -110,6 +165,115 @@
         console.log(item, "item====");
       },
     });
+    gydSelectButton.init({
+      id: "insert_row_column",
+      defaultIndex: 0,
+      btns: [
+        {
+          showName: "前插入列",
+          click: () => {
+            let activeTabel = getActiveTabel()
+            let td = getSelectTdList()[0]
+            let colIndex = getTdInfo(td).col
+            console.log(activeTabel, 'activeTabel===');
+            console.log(colIndex, 'colIndex===');
+            saveCurSetp();
+          },
+        },
+        {
+          showName: "后插入列",
+          click: () => {
+            saveCurSetp();
+          },
+        },
+        {
+          showName: "前插入行",
+          click: () => {
+            saveCurSetp();
+          },
+        },
+        {
+          showName: "后插入行",
+          click: () => {
+            saveCurSetp();
+          },
+        },
+      ],
+      change: (item) => {
+        console.log(item, "item====");
+      },
+    });
+    gydSelectButton.init({
+      id: "set_vertical_align",
+      defaultIndex: 1,
+      btns: [
+        {
+          showName: "上对齐",
+          click: () => {
+            setTdStyle('verticalAlign', 'top')
+            saveCurSetp();
+          },
+        },
+        {
+          showName: "中对齐",
+          click: () => {
+            setTdStyle('verticalAlign', 'middle')
+            saveCurSetp();
+          },
+        },
+        {
+          showName: "下对齐",
+          click: () => {
+            setTdStyle('verticalAlign', 'bottom')
+            saveCurSetp();
+          },
+        },
+      ],
+      change: (item) => {
+        console.log(item, "item====");
+      },
+    });
+    gydSelectButton.init({
+      id: "set_text_align",
+      defaultIndex: 1,
+      btns: [
+        {
+          showName: "左对齐",
+          click: () => {
+            setTdStyle('textAlign', 'left')
+            saveCurSetp();
+          },
+        },
+        {
+          showName: "居中对齐",
+          click: () => {
+            setTdStyle('textAlign', 'center')
+            saveCurSetp();
+          },
+        },
+        {
+          showName: "右对齐",
+          click: () => {
+            setTdStyle('textAlign', 'right')
+            saveCurSetp();
+          },
+        },
+      ],
+      change: (item) => {
+        console.log(item, "item====");
+      },
+    });
+
+    const getActiveTabel = () => {
+      return document.querySelector(`table[name="${activeTabelName}"]`);
+    }
+
+    const setTdStyle = (key, value, unit = '') => {
+      let tdList = getSelectTdList()
+        tdList.forEach(td => {
+          td.style[key] = value + unit
+        })
+    }
 
     const createTabel = () => {
       gydDialog.init({
@@ -158,6 +322,7 @@
               totalHtml += curHtmlStr;
               tableCanvas.innerHTML = totalHtml;
               addSplit();
+              saveCurSetp();
             },
           },
           { name: "取消" },
@@ -197,10 +362,57 @@
           item.remove();
         }
       });
+      saveCurSetp();
+    };
+
+    const lastStep = () => {
+      if (stepIndex > 0) {
+        stepIndex--;
+        curStepData();
+      }
+    };
+    const nextStep = () => {
+      if (stepIndex < stepData.length - 1) {
+        stepIndex++;
+        curStepData();
+      }
+    };
+
+    const curStepData = () => {
+      if (stepIndex === -1) {
+        return;
+      }
+      if (stepIndex === stepData.length) {
+        return;
+      }
+      let tableContain = document.querySelector(".table-contain");
+      tableContain.innerHTML = stepData[stepIndex];
+
+      setTimeout(() => {
+        tableCanvas = document.querySelector("#table_canvas");
+        addCanvasEvent();
+        addSplit();
+      });
+    };
+
+    const saveCurSetp = () => {
+      // 撤销中途又再编辑
+      if (stepData.length - stepIndex > 1) {
+        stepData.length = stepData.length - stepIndex + 1;
+        stepIndex = stepData.length - 1;
+      }
+      // 最多保存20条操作记录
+      if (stepData.length > 20) {
+        stepData.shift();
+        stepIndex = stepData.length - 1;
+      }
+      stepData.push(tableCanvas.outerHTML);
+      stepIndex++;
     };
 
     const addSplit = () => {
       setTimeout(() => {
+        let tableCanvas = document.querySelector("#table_canvas");
         let tableList = document.querySelectorAll("#table_canvas table");
         let splitList = document.querySelectorAll(".split-line");
         splitList.forEach((split) => {
@@ -219,9 +431,9 @@
         setTimeout(() => {
           let splitContain = document.querySelector(".table-contain");
           let splitList = document.querySelectorAll(".split-line");
-          let cmNum = +document.querySelector("#table_canvas").style.width.replace("cm", "");
-          let pxNum = +splitContain.offsetWidth;
-          let pxToCmScale = pxNum / cmNum;
+          let cmNum = +tableCanvas.style.width.replace("cm", "");
+          let pxNum = +tableCanvas.offsetWidth;
+          let pxToCmScale = +(pxNum / cmNum).toFixed(4);
 
           let hasSplitDown = false;
           let splitDownEvent = null;
@@ -233,7 +445,6 @@
           splitList.forEach((split) => {
             split.addEventListener("mousedown", (event) => {
               event.preventDefault();
-              console.log("==11==mousedown");
               event.target.style.background = "#ccc";
               splitContain.style.cursor = "col-resize";
               hasSplitDown = true;
@@ -278,6 +489,9 @@
             }
           });
           splitContain.addEventListener("mouseup", () => {
+            if (hasSplitDown) {
+              saveCurSetp();
+            }
             splitList.forEach((split) => {
               split.style.background = "unset";
               splitContain.style.cursor = "unset";
@@ -313,6 +527,11 @@
       if (isNaN(startRow) || isNaN(endRow) || isNaN(startCol) || isNaN(endCol)) {
         return;
       }
+      if (startRow === endRow && startCol === endCol) {
+        let curTdDom = document.querySelector(`table[name="${activeTabelName}"] td[row="${startRow}"][col="${startCol}"]`);
+        curTdDom.classList.add("td-focus");
+        return
+      }
       // 上下左右任意拖动
       for (let row = Math.min(startRow, endRow); row < Math.max(startRow, endRow) + 1; row++) {
         for (let col = Math.min(startCol, endCol); col < Math.max(startCol, endCol) + 1; col++) {
@@ -327,10 +546,14 @@
       let tdList = document.querySelectorAll("#table_canvas td");
       tdList.forEach((td) => {
         td.classList.remove("select-td");
+        td.classList.remove("td-focus");
       });
     };
     const getSelectTdList = () => {
       let selectTdList = document.querySelectorAll("#table_canvas td.select-td");
+      if (selectTdList.length === 0) {
+        selectTdList = document.querySelectorAll("#table_canvas td.td-focus");
+      }
       if (selectTdList.length === 0) {
         gydMessage.init({
           text: "未选中单元格",
@@ -414,17 +637,23 @@
       left: 0px;
       width: 100%;
       background-color: rgb(245, 247, 249);
-      display: flex;
       z-index: 10;
       padding: 5px 10px;
     }
+
     .table-setting > div {
       margin: 0px 5px;
     }
-
+    .table-setting .setting-level {
+      margin-bottom: 5px;
+    }
+    .setting-label {
+      display: inline-block;
+      font-size: 12px;
+    }
     .table-contain {
       position: relative;
-      padding-top: 50px;
+      padding-top: 84px;
     }
 
     .table-contain .split-line {
@@ -452,6 +681,7 @@
     #table_canvas td {
       outline: none;
       border: 1px solid #ccc;
+      position: relative;
     }
 
     #table_canvas td * {
@@ -475,17 +705,29 @@
     select:focus {
       outline: none;
     }
+    .td-focus::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      width: 100%;
+      height: 100%;
+      border: 2px solid red;
+      pointer-events: none;
+    }
   </style>
   <!-- 需要在渲染页面设置的样式 -->
   <style>
     #table_canvas table {
+      font-family: sans-serif;
+      font-size: 12px;
       border-collapse: collapse;
       /* min-width: 100%; */
     }
 
     #table_canvas table tr {
       height: 0.5cm;
-      line-height: 1;
+      /* line-height: 1; */
     }
     #table_canvas table td {
       box-sizing: border-box;

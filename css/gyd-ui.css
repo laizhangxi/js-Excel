@@ -1,10 +1,12 @@
+:root {
+  --def-height: 30px;
+}
 /* 下拉框 */
 .gyd-select {
   display: inline-block;
   box-sizing: border-box;
-  padding: 5px 10px;
   border: 1px solid #dcdfe6;
-  height: 30px;
+  height: var(--def-height);
   position: relative;
   cursor: pointer;
   width: 100%;
@@ -12,19 +14,39 @@
 }
 .select-placeholder {
   color: #ccc;
+  padding: 5px 10px;
 }
 .select-value {
   color: #606266;
+  padding: 5px 10px;
 }
 .options-contain {
   position: absolute;
   left: 0px;
-  top: 31px;
+  top: var(--def-height);
   background: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   border-radius: 5px;
   color: #606266;
+  max-height: 300px;
+  overflow: auto;
+  z-index: 1000;
 }
+/*滚动条样式*/
+.options-contain::-webkit-scrollbar {
+  width: 6px;
+}
+.options-contain::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2);
+}
+.options-contain::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
+}
+
 .option-item {
   padding: 5px 10px;
   cursor: pointer;
@@ -39,7 +61,7 @@
   display: inline-flex;
   align-items: center;
   box-sizing: border-box;
-  height: 30px;
+  height: var(--def-height);
   border: 1px solid #dcdfe6;
   padding: 0px 10px;
   color: #606266;
@@ -106,8 +128,8 @@
   color: #606266;
   display: inline-block;
   font-size: inherit;
-  height: 30px;
-  line-height: 30px;
+  height: var(--def-height);
+  line-height: var(--def-height);
   outline: none;
   padding: 0 10px;
   transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
@@ -117,6 +139,7 @@
 /* 提示框 */
 .gyd-message {
   position: fixed;
+  min-width: 300px;
   top: 50px;
   left: 50%;
   -webkit-transform: translate(0%, -50%);
@@ -135,7 +158,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 30px;
+  height: var(--def-height);
   font-size: 14px;
   background-color: #409eff;
   color: #fff;
@@ -148,11 +171,12 @@
 .button-option-contain {
   min-width: calc(100% - 15px);
   position: absolute;
-  top: 30px;
+  top: var(--def-height);
   left: 15px;
   background-color: #fff;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   color: #606266;
+  z-index: 1000;
 }
 .button-option {
   padding: 5px 10px;
@@ -166,8 +190,8 @@
   position: relative;
   margin-left: 5px;
   padding: 0px 8px;
-  height: 30px;
-  line-height: 30px;
+  height: var(--def-height);
+  line-height: var(--def-height);
 }
 .select-button-icon::before {
   content: "";

@@ -9,16 +9,14 @@ const gyd = {
     objE.innerHTML = nodelist;
     return objE.childNodes;
   },
-  parseSelectValue: (value) => {
-    let valueTemp = eval(value);
-    if (valueTemp.length === 0) {
-      value = "";
-    } else if (valueTemp.length === 1) {
-      value = valueTemp[0];
-    } else if (valueTemp.length > 1) {
-      value = valueTemp;
+  parse: (value) => {
+    let tempValue = value
+    try {
+      tempValue = JSON.parse(value)
+    } catch (error) {
+      tempValue = value
     }
-    return value
+    return tempValue
   },
   switchNoneBlock: (dom) => {
     let oriDisplay = dom.style.display;
@@ -27,5 +25,6 @@ const gyd = {
     } else {
       dom.style.display = "none";
     }
+    
   }
 };

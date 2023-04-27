@@ -1,80 +1,116 @@
-const gydSelect = {
-  init: (props) => {
-    if (!props.placeholder) {
-      props.placeholder = "请选择";
+const gydSelect = (() => {
+  let props = {};
+  const init = (prame) => {
+    props[prame.id] = prame;
+    console.log(props, 'props=====');
+    if (!props[prame.id].placeholder) {
+      props[prame.id].placeholder = "请选择";
     }
-    if (props.emptyItem && props.options.length > 0) {
-      props.options.unshift({ label: "-清空-", value: "" });
+    if (props[prame.id].emptyItem && props[prame.id].options.length > 0) {
+      props[prame.id].options.unshift({ label: "-清空-", value: "" });
     }
-    const selectDom = document.querySelector(`#${props.id}`);
-    if (props.align) {
-      selectDom.style.textAlign = props.align;
+    const selectDom = document.querySelector(`#${props[prame.id].id}`);
+    if (props[prame.id].align) {
+      selectDom.style.textAlign = props[prame.id].align;
     }
-    let defaultIndex = props.defaultIndex;
-    if (typeof defaultIndex === "number" && props.options.length > defaultIndex) {
-      if (props.emptyItem) {
+    let defaultIndex = props[prame.id].defaultIndex;
+    if (typeof defaultIndex === "number" && props[prame.id].options.length > defaultIndex) {
+      if (props[prame.id].emptyItem) {
         defaultIndex++;
       }
-      selectDom.innerHTML = `<div class="select-value">${props.options[defaultIndex].label}</div>`;
+      selectDom.innerHTML = `<div class="select-value" value=${JSON.stringify(props[prame.id].options[defaultIndex].value)}>${props[prame.id].options[defaultIndex].label}</div>`;
     } else {
-      selectDom.innerHTML = `<div class="select-placeholder">${props.placeholder}</div>`;
+      selectDom.innerHTML = `<div class="select-placeholder">${props[prame.id].placeholder}</div>`;
     }
+    selectDom.removeEventListener("click", selectClick);
+    selectDom.addEventListener("click", selectClick);
+  };
+  const selectClick = (event) => {
+    const selectDom = event.target.parentNode;
+    if (!selectDom.classList.contains('gyd-select')) {
+      return
+    }
+    const optionContain = selectDom.querySelector(".options-contain");
+    if (!optionContain) {
+      // // 加载options
+      renderOptions(selectDom);
+    } else {
+      gyd.switchNoneBlock(optionContain);
+    }
+  };
+  const change = (id, label, value, index) => {
+    props[id].change({ label, index, value: gyd.parse(value) });
+  };
 
-    selectDom.addEventListener("click", () => {
-      const optionContain = selectDom.querySelector(".options-contain");
-      if (!optionContain) {
-        // 加载options
-        let selectDomWidth = selectDom.offsetWidth + "px";
-        let optionStr = `<div class="options-contain" style="min-width: ${selectDomWidth}">`;
-        props.options.forEach((option) => {
-          optionStr += `<div class="option-item" value="[${option.value}]">${option.label}</div>`;
-        });
-        optionStr += "</div>";
-        selectDom.append(gyd.parseTdDom(optionStr)[0]);
-        // option添加点击事件
-        const optionList = selectDom.querySelectorAll(".option-item");
-        optionList.forEach((option) => {
-          const label = option.innerText;
-          const value = option.getAttribute("value");
-          option.addEventListener("click", (event) => {
-            event.stopPropagation();
-            optionClick(props, selectDom, label, value);
-          });
-        });
-      } else {
-        gyd.switchNoneBlock(optionContain);
+  const getData = (prame) => {
+    let valueDom = document.querySelector(`#${prame.id} .select-value`);
+    if (!valueDom) {
+      return;
+    }
+    let value = valueDom.getAttribute("value");
+    value = gyd.parse(value);
+    let label = valueDom.innerText;
+    if (prame.type === "value") {
+      return value;
+    }
+    if (prame.type === "label") {
+      return label;
+    }
+    return { label, value };
+  };
+  const reLoad = (prame) => {
+    for (const key in props) {
+      if (key === prame.id) {
+        let newProps = { ...props[key], ...prame };
+        props[key] = newProps
+        init(newProps);
+      }
+    }
+  };
+  const renderOptions = (selectDom) => {
+    let id = selectDom.getAttribute('id')
+    let selectDomWidth = selectDom.offsetWidth + "px";
+    let optionStr = `<div class="options-contain" style="min-width: ${selectDomWidth};">`;
+    props[id].options.forEach((option, index) => {
+      let newIndex = index;
+      if (props[id].emptyItem) {
+        newIndex--;
+      }
+      optionStr += `<div class="option-item" index="${newIndex}" value=${JSON.stringify(option.value)}>${option.label}</div>`;
+    });
+    optionStr += "</div>";
+    selectDom.append(gyd.parseTdDom(optionStr)[0]);
+    // option添加点击事件(事件代理)
+    let optionsDom = selectDom.querySelector(".options-contain");
+    optionsDom.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const label = event.target.innerText;
+      const value = event.target.getAttribute("value");
+      let index = +event.target.getAttribute("index");
+      optionClick(optionsDom, selectDom, label, value, index);
+      if (typeof props[id].change === "function") {
+        change(id, label, value, index);
       }
     });
+  };
+  const optionClick = (optionsDom, selectDom, label, value, index) => {
+    let valDom = selectDom.querySelector(".select-placeholder") || selectDom.querySelector(".select-value");
+    if (index === -1) {
+      valDom.classList.remove("select-value");
+      valDom.classList.add("select-placeholder");
+      valDom.innerText = props.placeholder;
+      valDom.removeAttribute("value");
+    } else {
+      valDom.classList.remove("select-placeholder");
+      valDom.classList.add("select-value");
+      valDom.innerText = label;
+      valDom.setAttribute("value", value);
+    }
+    optionsDom.style.display = "none";
+  };
 
-    const optionClick = (props, selectDom, label, value) => {
-      let placeholderDom = selectDom.querySelector(".select-placeholder") || selectDom.querySelector(".select-value");
-      if (value !== "[]") {
-        placeholderDom.classList.remove("select-placeholder");
-        placeholderDom.classList.add("select-value");
-        placeholderDom.innerText = label;
-        placeholderDom.setAttribute("value", value);
-      } else {
-        placeholderDom.classList.remove("select-value");
-        placeholderDom.classList.add("select-placeholder");
-        placeholderDom.innerText = props.placeholder;
-        placeholderDom.removeAttribute("value");
-      }
-      // option改变事件
-      if (typeof props.change === "function") {
-        change(props, label, value);
-      }
-      const optionContain = selectDom.querySelector(".options-contain");
-      optionContain.style.display = "none";
-    };
-
-    const change = (props, label, value) => {
-      props.change({ label, value: gyd.parseSelectValue(value) });
-    };
-  },
-  getData: () => {
-    console.log();
-  },
-};
+  return { init, getData, reLoad };
+})();
 
 const gydDialog = {
   init: (props) => {
@@ -116,7 +152,7 @@ const gydDialog = {
         }
         if (item.type === "select") {
           let selectDom = document.querySelector(`.gyd-dialog-contain[name="${dialogName}"] #${item.id} .select-value`);
-          obj[item.id] = gyd.parseSelectValue(selectDom.getAttribute("value"));
+          obj[item.id] = gyd.parse(selectDom.getAttribute("value"));
         }
       });
       return obj;
